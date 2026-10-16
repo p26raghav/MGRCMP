@@ -1,0 +1,333 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MGRCMP End-Term — Practice Papers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+ --bg:#0e1512;--panel:#131c18;--panel2:#0b120f;--ink:#e8efe9;--muted:#8fa398;
+ --line:#243029;--grid:#1b241f;--accent:#3fb27f;--accent2:#e0b341;--blue:#5aa9e6;--red:#e0685f;--purple:#b48ce0;
+ --cellhead:#1a231e;--formula:#0a0f0d;
+ --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;--sans:'Inter','Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;
+ background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+ background-size:28px 28px;background-position:-1px -1px}
+.wrap{max-width:920px;margin:0 auto;padding:0 20px}
+header.top{padding:46px 0 18px}
+.rowref{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rowref .box{border:1px solid var(--line);background:var(--panel);padding:3px 9px;border-radius:4px;color:var(--accent)}
+h1.title{font-size:clamp(26px,4.2vw,40px);font-weight:800;letter-spacing:-.5px}
+h1.title .eq{color:var(--accent)}
+.sub{color:var(--muted);margin-top:12px;font-size:15px;max-width:74ch}
+
+/* paper picker */
+.picker{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.pcard{flex:1;min-width:220px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:18px 20px;cursor:pointer;transition:.15s}
+.pcard:hover{border-color:var(--accent)}
+.pcard h3{font-size:18px;margin-bottom:4px}
+.pcard .meta{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.pcard .go{margin-top:12px;display:inline-block;font-size:13px;font-weight:600;color:var(--accent)}
+
+/* exam chrome */
+nav.bar{position:sticky;top:0;z-index:40;background:rgba(14,21,18,.95);backdrop-filter:blur(8px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:none}
+nav.bar.show{display:block}
+nav.bar .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
+nav.bar .ptitle{font-weight:700}
+nav.bar .timer{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--accent);background:var(--panel2);border:1px solid var(--line);padding:5px 12px;border-radius:8px}
+nav.bar .timer.warn{color:var(--accent2)}nav.bar .timer.crit{color:var(--red)}
+nav.bar .pts{font-family:var(--mono);font-size:13px;color:var(--muted)}
+nav.bar button{font-family:var(--sans);font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:7px 13px;border-radius:6px;cursor:pointer;margin-left:auto}
+nav.bar button:hover{border-color:var(--accent);color:var(--accent)}
+nav.bar button.primary{background:var(--accent);color:var(--bg);border-color:var(--accent);margin-left:0}
+nav.bar button.ghost{margin-left:0}
+
+section.exam{display:none;padding:22px 0 60px}
+section.exam.show{display:block}
+.instructions{border:1px solid var(--line);border-left:3px solid var(--blue);background:rgba(90,169,230,.06);border-radius:8px;padding:14px 16px;margin-bottom:22px;font-size:13px;color:#cfe3f5}
+.instructions b{color:var(--blue)}
+.parthead{font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:1px;color:var(--accent);border-bottom:2px solid var(--line);padding:16px 0 8px;margin:22px 0 6px}
+.parthead span{color:var(--muted);font-weight:400;letter-spacing:0}
+
+/* reference dataset block */
+.refwrap{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:14px 0 20px;overflow:hidden}
+.refwrap>summary{cursor:pointer;list-style:none;padding:12px 16px;font-weight:600;font-size:13px;color:var(--accent2);display:flex;align-items:center;gap:8px}
+.refwrap>summary::-webkit-details-marker{display:none}
+.refwrap .chev{color:var(--muted);transition:transform .2s}.refwrap[open] .chev{transform:rotate(90deg)}
+.refbody{padding:0 16px 14px}
+.xtbl-wrap{overflow-x:auto;margin:6px 0}
+table.xtbl{border-collapse:collapse;font-family:var(--mono);font-size:11.5px}
+table.xtbl th,table.xtbl td{border:1px solid var(--line);padding:4px 8px;text-align:left;white-space:nowrap}
+table.xtbl thead th{background:var(--cellhead);color:var(--accent);font-weight:700;text-align:center}
+table.xtbl tbody td:first-child{background:var(--cellhead);color:var(--muted);text-align:center;font-weight:700}
+
+/* question */
+.q{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:16px 18px;margin-bottom:14px}
+.q .qh{display:flex;gap:10px;align-items:baseline;margin-bottom:10px}
+.q .qn{font-family:var(--mono);font-weight:700;color:var(--accent)}
+.q .mk{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:10px}
+.qbody{font-size:14.5px;margin-bottom:12px}
+.qbody code{font-family:var(--mono);background:var(--formula);border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-size:12.5px;color:var(--accent)}
+.opts{display:grid;gap:7px}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:9px 12px;cursor:pointer;font-size:13.5px;background:var(--panel2)}
+.opt:hover:not(.locked){border-color:var(--accent)}
+.opt.sel{border-color:var(--accent);background:rgba(63,178,127,.1)}
+.opt .k{font-family:var(--mono);font-weight:700;color:var(--muted);min-width:18px}
+.opt.right{border-color:var(--accent);background:rgba(63,178,127,.14)}.opt.right .k{color:var(--accent)}
+.opt.chosen-wrong{border-color:var(--red);background:rgba(224,104,95,.12)}.opt.chosen-wrong .k{color:var(--red)}
+
+/* type-in answer */
+.answer-in{width:100%;font-family:var(--mono);font-size:14px;background:var(--formula);border:1px solid var(--line);border-left:3px solid var(--accent2);border-radius:8px;padding:11px 13px;color:var(--accent2);resize:vertical;min-height:46px}
+.answer-in:focus{outline:none;border-color:var(--accent)}
+.fieldrow{display:grid;grid-template-columns:minmax(120px,1fr) 2fr;gap:8px;margin:6px 0}
+.fieldrow .fl{font-size:13px;font-weight:600;color:var(--muted);align-self:center}
+.fieldrow input{font-family:var(--mono);font-size:13px;background:var(--formula);border:1px solid var(--line);border-radius:6px;padding:8px 10px;color:var(--accent2)}
+.fieldrow input:focus{outline:none;border-color:var(--accent)}
+
+/* criteria grid input */
+.cgrid{overflow-x:auto;margin:8px 0}
+table.cg{border-collapse:collapse;font-family:var(--mono);font-size:12px}
+table.cg td,table.cg th{border:1px solid var(--line);padding:0}
+table.cg th{background:var(--cellhead);color:var(--accent);padding:4px 8px;text-align:center}
+table.cg td:first-child{background:var(--cellhead);color:var(--muted);padding:4px 8px;text-align:center;font-weight:700}
+table.cg input{width:100px;font-family:var(--mono);font-size:12px;background:transparent;border:none;padding:6px 8px;color:var(--accent2)}
+table.cg input:focus{outline:1px solid var(--accent)}
+
+.qactions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.qactions button{font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:7px 13px;border-radius:6px;cursor:pointer}
+.qactions button:hover{border-color:var(--accent);color:var(--accent)}
+.selfmark{display:none;gap:6px}
+.selfmark.show{display:flex}
+.selfmark button{border-radius:6px}
+.selfmark .mc{border-color:var(--accent);color:var(--accent)}
+.selfmark .mp{border-color:var(--accent2);color:var(--accent2)}
+.selfmark .mw{border-color:var(--red);color:var(--red)}
+.selfmark button.on{color:var(--bg)}
+.selfmark .mc.on{background:var(--accent)}.selfmark .mp.on{background:var(--accent2)}.selfmark .mw.on{background:var(--red)}
+
+.model{display:none;margin-top:12px;border:1px solid var(--line);border-left:3px solid var(--accent);background:rgba(63,178,127,.07);border-radius:8px;padding:12px 14px}
+.model.show{display:block}
+.model .ml{font-family:var(--mono);font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.model .mf{font-family:var(--mono);font-size:13.5px;color:var(--ink);background:var(--formula);border:1px solid var(--line);border-radius:6px;padding:9px 11px;margin-bottom:8px;overflow-x:auto}
+.model .alt{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px}
+.model .exp{font-size:13px;color:#d5e4da}
+.model .exp code,.model .alt code{font-family:var(--mono);background:var(--formula);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px;color:var(--accent)}
+
+/* result */
+.result{display:none;border:1px solid var(--accent);border-radius:12px;background:var(--panel);padding:22px;margin:20px 0}
+.result.show{display:block}
+.result h2{font-size:22px;margin-bottom:6px}
+.result .big{font-family:var(--mono);font-size:34px;font-weight:800;color:var(--accent)}
+.result .cls{font-size:14px;color:var(--muted);margin-top:6px}
+.result .row{display:flex;flex-wrap:wrap;gap:22px;margin-top:14px;font-size:13px;color:var(--muted)}
+.result .row b{display:block;font-size:19px;color:var(--ink);font-family:var(--mono)}
+
+
+.home-center{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 20px}
+.fate{color:#ffffff;font-family:var(--sans);font-weight:800;font-size:clamp(30px,5.2vw,56px);line-height:1.15;letter-spacing:-.5px;max-width:900px}
+.tiers{display:grid;gap:16px;margin-top:44px;width:100%;max-width:380px}
+.tier{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:22px;cursor:pointer;transition:.15s;font-family:var(--sans);font-size:24px;font-weight:800;text-align:center}
+.tier:hover{transform:translateY(-2px)}
+.tier.easy{color:var(--accent)}.tier.easy:hover{border-color:var(--accent)}
+.tier.medium{color:var(--accent2)}.tier.medium:hover{border-color:var(--accent2)}
+.tier.god{color:var(--red)}.tier.god:hover{border-color:var(--red)}
+/* left question navigator */
+.qnav{position:fixed;left:16px;top:70px;width:112px;max-height:calc(100vh - 90px);overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;z-index:35}
+.qnav .ph{font-family:var(--mono);font-size:11px;color:var(--muted);margin:6px 2px 6px}
+.qnav .ph:first-child{margin-top:0}
+.qnav .grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.qnav button{font-family:var(--mono);font-size:12px;font-weight:700;padding:6px 0;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);cursor:pointer}
+.qnav button:hover{border-color:var(--accent)}
+.qnav button.done{border-color:var(--blue);color:var(--blue)}
+.qnav button.mc{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.qnav button.mp{background:var(--accent2);border-color:var(--accent2);color:var(--bg)}
+.qnav button.mw{background:var(--red);border-color:var(--red);color:var(--bg)}
+.q{scroll-margin-top:80px}
+@media(max-width:1180px){section.exam .wrap{margin-left:140px;margin-right:16px}}
+@media(max-width:700px){.qnav{top:auto;bottom:0;left:0;right:0;width:auto;max-height:none;border-radius:0;display:flex;overflow-x:auto;gap:6px;padding:8px}.qnav .ph{display:none}.qnav .grid{display:flex;gap:6px}.qnav button{min-width:40px}section.exam .wrap{margin-left:auto;margin-right:auto;padding-bottom:60px}}
+footer{color:var(--muted);font-size:12px;text-align:center;padding:36px 0;border-top:1px solid var(--line);margin-top:20px}
+@media(max-width:600px){.fieldrow{grid-template-columns:1fr}}
+</style></head><body>
+
+<nav class="bar" id="bar"><div class="wrap">
+<span class="ptitle" id="barTitle"></span>
+<span class="timer" id="timer">75:00</span>
+<span class="pts" id="barPts">Self-score: 0 / 50</span>
+<button class="ghost" onclick="exitPaper()">Exit to menu</button>
+</div></nav>
+
+<div id="home">
+<div class="home-center">
+<h1 class="fate">I Know "We are the Boss" but Please Term 1&nbsp; khatam karwado 😂</h1>
+<div class="tiers">
+<button class="tier easy" onclick="startPaper('easy')">Easy</button>
+<button class="tier medium" onclick="startPaper('medium')">Medium</button>
+<button class="tier god" onclick="startPaper('god')">God Level</button>
+</div>
+</div>
+</div>
+
+<section class="exam"><nav class="qnav" id="qnav"></nav><div class="wrap" id="exam"></div></section>
+
+<script>
+
+const DATASETS={"orders":{"title":"Orders — range A1:J19","cols":["","A","B","C","D","E","F","G","H","I","J"],"rows":[["1","Order ID","Outlet","City","Item","Category","Qty","Rate (₹)","Amount (₹)","Payment","Month"],["2","KC-1001","Navrangpura","Ahmedabad","Masala Chai","Beverage","4","40","160","UPI","Jan"],["3","KC-1002","Koregaon Park","Pune","Bun Maska","Snack","3","60","180","Cash","Jan"],["4","KC-1003","C-Scheme","Jaipur","Cold Coffee","Beverage","2","120","240","Card","Jan"],["5","KC-1004","Navrangpura","Ahmedabad","Vada Pav","Snack","6","35","210","UPI","Jan"],["6","KC-1005","Prahlad Nagar","Ahmedabad","Brownie","Dessert","2","90","180","Card","Feb"],["7","KC-1006","Koregaon Park","Pune","Masala Chai","Beverage","8","40","320","UPI","Feb"],["8","KC-1007","C-Scheme","Jaipur","Samosa","Snack","5","25","125","Cash","Feb"],["9","KC-1008","Prahlad Nagar","Ahmedabad","Cold Coffee","Beverage","3","120","360","UPI","Feb"],["10","KC-1009","Navrangpura","Ahmedabad","Brownie","Dessert","1","90","90","Cash","Feb"],["11","KC-1010","Baner","Pune","Vada Pav","Snack","10","35","350","UPI","Mar"],["12","KC-1011","C-Scheme","Jaipur","Kulhad Lassi","Beverage","4","70","280","Card","Mar"],["13","KC-1012","Baner","Pune","Bun Maska","Snack","2","60","120","UPI","Mar"],["14","KC-1013","Navrangpura","Ahmedabad","Kulhad Lassi","Beverage","5","70","350","UPI","Mar"],["15","KC-1014","Prahlad Nagar","Ahmedabad","Samosa","Snack","12","25","300","Cash","Mar"],["16","KC-1015","Koregaon Park","Pune","Brownie","Dessert","3","90","270","Card","Mar"],["17","KC-1016","C-Scheme","Jaipur","Masala Chai","Beverage","6","40","240","UPI","Apr"],["18","KC-1017","Baner","Pune","Cold Coffee","Beverage","1","120","120","Card","Apr"],["19","KC-1018","Navrangpura","Ahmedabad","Vada Pav","Snack","7","35","245","Cash","Apr"]]},"menu":{"title":"Menu Master — range L1:O8","cols":["","L","M","N","O"],"rows":[["1","Item Code","Item","Category","Rate (₹)"],["2","BEV-01","Masala Chai","Beverage","40"],["3","BEV-02","Cold Coffee","Beverage","120"],["4","BEV-03","Kulhad Lassi","Beverage","70"],["5","SNK-01","Bun Maska","Snack","60"],["6","SNK-02","Vada Pav","Snack","35"],["7","SNK-03","Samosa","Snack","25"],["8","DES-01","Brownie","Dessert","90"]]},"staff":{"title":"Staff Register — range A22:E27","cols":["","A","B","C","D","E"],"rows":[["22","Staff Code","Full Name","Role","Join Year","Salary (₹)"],["23","AHD-BAR-014","Priya Shah","Barista","2021","22000"],["24","PUN-MGR-003","Rohit Kulkarni","Manager","2019","41000"],["25","JAI-BAR-027","Sana Mirza","Barista","2023","19500"],["26","AHD-CSH-009","Kunal Desai","Cashier","2022","18000"],["27","PUN-BAR-031","Meera Joshi","Barista","2024","19000"]]},"outlet":{"title":"New Outlet Profit Model — range L11:M17","cols":["","L","M"],"rows":[["11","Parameter","Value"],["12","Avg bill per order (₹)","180"],["13","Orders per day","120"],["14","Working days / month","30"],["15","Variable cost (% of sales)","45%"],["16","Monthly fixed cost (₹)","260000"],["17","Monthly profit (₹)","=M12*M13*M14*(1-M15)-M16"]]},"visits":{"title":"Patient Visits — range A1:I25","cols":["","A","B","C","D","E","F","G","H","I"],"rows":[["1","Visit ID","Patient","Age","Department","Doctor Code","Visit Type","Bill (₹)","Insured","Month"],["2","AR-AHD-1001","Ananya Rao","54","Cardiology","D01","IPD","48500","Y","Jan"],["3","AR-PUN-1002","Vikram Joshi","31","Orthopaedics","D03","OPD","1800","N","Jan"],["4","AR-BLR-1003","Fatima Sheikh","8","Paediatrics","D06","OPD","900","Y","Jan"],["5","AR-AHD-1004","Harsh Patel","67","Cardiology","D02","OPD","2500","Y","Jan"],["6","AR-PUN-1005","Neha Kulkarni","29","Dermatology","D05","OPD","1500","N","Jan"],["7","AR-BLR-1006","Arjun Menon","45","Orthopaedics","D04","IPD","62000","Y","Feb"],["8","AR-AHD-1007","Kavya Shah","12","Paediatrics","D06","OPD","1100","N","Feb"],["9","AR-PUN-1008","Rakesh Gupta","71","Cardiology","D01","IPD","91500","Y","Feb"],["10","AR-BLR-1009","Sneha Iyer","36","Dermatology","D05","OPD","2200","Y","Feb"],["11","AR-AHD-1010","Imran Khan","58","Orthopaedics","D03","IPD","38000","N","Feb"],["12","AR-PUN-1011","Pooja Nair","5","Paediatrics","D07","IPD","16500","Y","Mar"],["13","AR-BLR-1012","Dev Malhotra","62","Cardiology","D02","OPD","3000","N","Mar"],["14","AR-AHD-1013","Riya Desai","24","Dermatology","D05","OPD","1200","N","Mar"],["15","AR-PUN-1014","Suresh Pillai","49","Orthopaedics","D04","OPD","2000","Y","Mar"],["16","AR-BLR-1015","Aditi Verma","33","Cardiology","D01","OPD","2800","Y","Mar"],["17","AR-AHD-1016","Kabir Sinha","9","Paediatrics","D06","IPD","22000","Y","Mar"],["18","AR-PUN-1017","Meena Rao","77","Orthopaedics","D03","IPD","74500","Y","Apr"],["19","AR-BLR-1018","Tanvi Bhatt","27","Dermatology","D05","OPD","1700","N","Apr"],["20","AR-AHD-1019","Gopal Reddy","64","Cardiology","D02","IPD","56000","N","Apr"],["21","AR-PUN-1020","Ishaan Jain","3","Paediatrics","D07","OPD","800","N","Apr"],["22","AR-BLR-1021","Nikita Das","41","Orthopaedics","D04","OPD","2400","Y","Apr"],["23","AR-AHD-1022","Farhan Ali","52","Dermatology","D05","IPD","9500","Y","Apr"],["24","AR-PUN-1023","Lata Mishra","69","Cardiology","D01","OPD","2600","Y","Apr"],["25","AR-BLR-1024","Om Prakash","81","Cardiology","D02","IPD","103000","Y","Apr"]]},"doctors":{"title":"Doctor Master — range L1:P8","cols":["","L","M","N","O","P"],"rows":[["1","Doctor Code","Doctor Name","Department","Experience (yrs)","Consult Fee (₹)"],["2","D01","Dr. S. Bhandari","Cardiology","22","1500"],["3","D02","Dr. R. Mehta","Cardiology","9","1000"],["4","D03","Dr. A. Kapoor","Orthopaedics","15","1200"],["5","D04","Dr. P. Nambiar","Orthopaedics","6","800"],["6","D05","Dr. K. Sethi","Dermatology","11","900"],["7","D06","Dr. M. Fernandes","Paediatrics","18","700"],["8","D07","Dr. T. Ghosh","Paediatrics","4","600"]]},"slab":{"title":"Bill Discount Slabs — range L11:M16","cols":["","L","M"],"rows":[["11","Bill From (₹)","Discount"],["12","0","0%"],["13","5000","5%"],["14","20000","8%"],["15","50000","12%"],["16","100000","15%"]]},"occ":{"title":"Ward Occupancy — range A28:G32","cols":["","A","B","C","D","E","F","G"],"rows":[["28","Ward","Jan","Feb","Mar","Apr","May","Jun"],["29","General","78%","82%","75%","88%","91%","85%"],["30","ICU","92%","95%","89%","97%","94%","90%"],["31","Paediatric","64%","70%","72%","69%","58%","61%"],["32","Maternity","81%","77%","85%","80%","83%","87%"]]},"ins":{"title":"Insurance Package Model — range L18:M24","cols":["","L","M"],"rows":[["18","Parameter","Value"],["19","Annual premium per member (₹)","4200"],["20","Members","1500"],["21","Claim rate","18%"],["22","Average claim (₹)","21000"],["23","Admin cost (₹)","900000"],["24","Surplus (₹)","=M19*M20-M20*M21*M22-M23"]]},"blotter":{"title":"Trade Blotter — range A1:J31","cols":["","A","B","C","D","E","F","G","H","I","J"],"rows":[["1","Trade ID","Trader","Desk","Contract","Side","Lots","Entry Price","Exit Price","Exchange","Month"],["2","ASC-26-BRT-001","Aakash","Crude","BRT","Buy","20","81.40","82.10","ICE","Jan"],["3","ASC-26-WTI-002","Bianca","Crude","WTI","Sell","15","77.90","76.80","NYMEX","Jan"],["4","ASC-26-GSO-003","Chen","Products","GSO","Buy","30","712.50","705.25","ICE","Jan"],["5","ASC-26-RBB-004","Dmitri","Products","RBB","Sell","10","2.3450","2.3010","NYMEX","Jan"],["6","ASC-26-HHG-005","Esha","Gas","HHG","Buy","25","3.105","3.260","NYMEX","Jan"],["7","ASC-26-BRT-006","Bianca","Crude","BRT","Sell","12","82.30","83.05","ICE","Feb"],["8","ASC-26-WTI-007","Aakash","Crude","WTI","Buy","18","76.20","77.45","NYMEX","Feb"],["9","ASC-26-GSO-008","Dmitri","Products","GSO","Sell","22","718.00","709.50","ICE","Feb"],["10","ASC-26-HHG-009","Esha","Gas","HHG","Sell","40","3.420","3.180","NYMEX","Feb"],["11","ASC-26-RBB-010","Chen","Products","RBB","Buy","8","2.2980","2.3360","NYMEX","Feb"],["12","ASC-26-BRT-011","Aakash","Crude","BRT","Sell","25","84.10","84.85","ICE","Feb"],["13","ASC-26-GSO-012","Chen","Products","GSO","Buy","16","701.75","722.00","ICE","Mar"],["14","ASC-26-WTI-013","Bianca","Crude","WTI","Buy","30","78.55","77.60","NYMEX","Mar"],["15","ASC-26-HHG-014","Esha","Gas","HHG","Buy","35","2.985","3.040","NYMEX","Mar"],["16","ASC-26-RBB-015","Dmitri","Products","RBB","Buy","12","2.4120","2.4580","NYMEX","Mar"],["17","ASC-26-BRT-016","Bianca","Crude","BRT","Buy","10","83.70","85.20","ICE","Mar"],["18","ASC-26-WTI-017","Aakash","Crude","WTI","Sell","20","79.10","77.95","NYMEX","Mar"],["19","ASC-26-GSO-018","Dmitri","Products","GSO","Buy","25","725.50","719.00","ICE","Mar"],["20","ASC-26-HHG-019","Esha","Gas","HHG","Sell","20","3.310","3.355","NYMEX","Apr"],["21","ASC-26-BRT-020","Aakash","Crude","BRT","Buy","30","85.60","86.95","ICE","Apr"],["22","ASC-26-RBB-021","Chen","Products","RBB","Sell","14","2.5150","2.4700","NYMEX","Apr"],["23","ASC-26-WTI-022","Bianca","Crude","WTI","Sell","25","80.40","81.30","NYMEX","Apr"],["24","ASC-26-GSO-023","Chen","Products","GSO","Sell","18","731.25","716.50","ICE","Apr"],["25","ASC-26-HHG-024","Esha","Gas","HHG","Buy","45","3.150","3.095","NYMEX","Apr"],["26","ASC-26-BRT-025","Dmitri","Crude","BRT","Sell","15","86.20","85.10","ICE","May"],["27","ASC-26-WTI-026","Aakash","Crude","WTI","Buy","22","77.80","79.15","NYMEX","May"],["28","ASC-26-RBB-027","Bianca","Products","RBB","Buy","9","2.4410","2.4100","NYMEX","May"],["29","ASC-26-GSO-028","Chen","Products","GSO","Buy","20","698.00","711.75","ICE","May"],["30","ASC-26-HHG-029","Esha","Gas","HHG","Sell","30","3.020","2.910","NYMEX","May"],["31","ASC-26-BRT-030","Bianca","Crude","BRT","Sell","18","87.05","86.40","ICE","May"]]},"specs":{"title":"Contract Specs — range L1:O6","cols":["","L","M","N","O"],"rows":[["1","Code","Contract","Exchange","Lot Size"],["2","BRT","Brent Crude","ICE","1000"],["3","WTI","WTI Crude","NYMEX","1000"],["4","GSO","ICE Gasoil","ICE","100"],["5","RBB","RBOB Gasoline","NYMEX","42000"],["6","HHG","Henry Hub Gas","NYMEX","10000"]]},"limits":{"title":"Trader Limits (traders run across) — range L9:Q11","cols":["","L","M","N","O","P","Q"],"rows":[["9","Metric","Aakash","Bianca","Chen","Dmitri","Esha"],["10","Max lots per trade","30","25","25","25","40"],["11","Stop-loss (USD)","60000","50000","40000","40000","30000"]]},"shock":{"title":"Scenario Price Shocks (USD per unit) — range L14:O16","cols":["","L","M","N","O"],"rows":[["14","Scenario","BRT","GSO","HHG"],["15","Bull","2.5","18","0.2"],["16","Bear","-4","-25","-0.35"]]},"expo":{"title":"Net Exposure (units) — range L19:M22","cols":["","L","M"],"rows":[["19","Code","Net Units"],["20","BRT","50000"],["21","GSO","3000"],["22","HHG","400000"]]},"solver":{"title":"Capital Allocation Model — range A34:E40","cols":["","A","B","C","D","E"],"rows":[["34","Strategy","Exp. P&L per lot (USD)","Margin per lot (USD)","Lots","Max lots"],["35","Brent calendar spread","850","6000","","40"],["36","Gasoil crack","1200","9500","","25"],["37","HH storage play","600","4000","","60"],["38","RBOB summer spread","1500","14000","","15"],["39","Total","=SUMPRODUCT(B35:B38,D35:D38)","=SUMPRODUCT(C35:C38,D35:D38)","",""],["40","Margin budget","","400000","",""]]}};
+const EASY={"title":"Easy","marks":50,"minutes":75,"partA":[{"n":"A1","marks":1,"type":"mcq","q":"The Menu Master is in L1:O8. What does <code>=VLOOKUP(\"Kulhad Lassi\",L2:O8,4,FALSE)</code> return?","opts":["70","Beverage","#N/A","#REF!"],"correct":2,"exp":"VLOOKUP only searches the FIRST column of the table — column L (Item Code). \"Kulhad Lassi\" sits in column M, so there is no match → <b>#N/A</b>. Fix: <code>=VLOOKUP(\"Kulhad Lassi\",M2:O8,3,FALSE)</code> or XLOOKUP.","ds":["menu"]},{"n":"A2","marks":1,"type":"mcq","q":"What does <code>=COUNTIF(D2:D19,\"*Chai*\")</code> return?","opts":["0","1","18","3"],"correct":3,"exp":"* matches any characters on either side, so every item containing \"Chai\" counts: the Masala Chai orders → <b>3</b>. Without the wildcards (just \"Chai\") the answer would be 0.","ds":["orders"]},{"n":"A3","marks":1,"type":"mcq","q":"What does <code>=SUMIF(C2:C19,\"Pune\",F2:F19)</code> return?","opts":["27","1,360","6","0"],"correct":0,"exp":"It adds Qty for Pune rows → <b>27</b>. 1,360 is the Pune <i>Amount</i> total and 6 is the number of Pune orders.","ds":["orders"]},{"n":"A4","marks":1,"type":"mcq","q":"What does <code>=INDEX(L2:O8,MATCH(\"SNK-02\",L2:L8,0),2)</code> return?","opts":["SNK-02","Vada Pav","35","Snack"],"correct":1,"exp":"MATCH finds SNK-02 at position 5; INDEX returns row 5, column 2 of L2:O8 → <b>Vada Pav</b>. Column 4 would give 35.","ds":["menu"]},{"n":"A5","marks":1,"type":"mcq","q":"A23 holds <code>AHD-BAR-014</code>. What does <code>=LEFT(A23,FIND(\"-\",A23)-1)</code> return?","opts":["AHD-","AH","AHD","BAR"],"correct":2,"exp":"FIND gives the first hyphen at position 4; LEFT takes 4−1 = 3 characters → <b>AHD</b>. Dropping the −1 would return \"AHD-\".","ds":["staff"]},{"n":"A6","marks":1,"type":"mcq","q":"A criteria range N20:N21 holds <code>City</code> / <code>Pune</code>. What does <code>=DCOUNT(A1:J19,\"Payment\",N20:N21)</code> return?","opts":["6","3","#VALUE!","0"],"correct":3,"exp":"DCOUNT counts only <b>numeric</b> entries in the chosen field. Payment is text (UPI/Cash/Card) → <b>0</b>. DCOUNTA would return 6.","ds":["orders"]},{"n":"A7","marks":1,"type":"mcq","q":"A Conditional Formatting rule is applied to A2:J19. Which formula colours the <b>whole row</b> of every Cash order?","opts":["=$I2=\"Cash\"","=I2=\"Cash\"","=$I$2=\"Cash\"","=I$2=\"Cash\""],"correct":0,"exp":"Lock the column ($I) so every cell in the row looks at Payment; leave the row free so each row tests itself.","ds":["orders"]},{"n":"A8","marks":1,"type":"mcq","q":"What does <code>=XLOOKUP(\"Filter Coffee\",D2:D19,H2:H19,\"Not sold\")</code> return?","opts":["#N/A","Not sold","0","Filter Coffee"],"correct":1,"exp":"Filter Coffee never appears in the Item column, so XLOOKUP returns its 4th argument, if_not_found → <b>Not sold</b>.","ds":["orders"]},{"n":"A9","marks":1,"type":"mcq","q":"You want a Pivot Table showing total sales for each City, with Months across the top. Which layout is right?","opts":["Rows: Amount (₹) · Columns: City · Values: Count of Month","Rows: Month · Columns: Amount (₹) · Values: Sum of City","Rows: City · Columns: Month · Values: Sum of Amount (₹)","Filters: City · Values: Count of Month"],"correct":2,"exp":"Categories go to Rows/Columns, the number you add up goes to Values.","ds":["orders"]},{"n":"A10","marks":2,"type":"tool","q":"The New Outlet Profit Model is in L11:M17 (profit in M17 is ₹96,400). Management wants a monthly profit of ₹1,50,000 by raising <b>orders per day</b>. Fill the Goal Seek dialog.","fields":[["Set cell","M17"],["To value","150000"],["By changing cell","M13"]],"exp":"Goal Seek drives the Profit cell (M17) to 150000 by changing Orders per day (M13). Result: (150000+260000)/(180×30×0.55) ≈ <b>138.05</b>, so the outlet needs about 139 orders a day.","ds":["outlet"]},{"n":"A11","marks":2,"type":"tool","q":"You build a one-variable Data Table to see profit at average bills of ₹150, ₹170, ₹190 and ₹210, typed down P12:P15. Fill the cell above-right of the list and the dialog.","fields":[["Formula in Q11","=M17"],["Row input cell","(leave blank)"],["Column input cell","M12"]],"exp":"Inputs run down a column → Column input cell = the Avg bill cell M12, and Q11 links to the output M17. The table then fills: ₹150 → ₹37,000, ₹170 → ₹76,600, ₹190 → ₹1,16,200, ₹210 → ₹1,55,800.","ds":["outlet"]},{"n":"A12","marks":2,"type":"mcq","q":"Three outlets send item-wise sales sheets. Each lists items in a different order and Pune has two extra items. To combine them into one summed table with Data → Consolidate you must:","opts":["Use Sum and tick \"Left column\" (and \"Top row\") so items are matched by label","Use Sum by position with no labels ticked","Use Count and tick only \"Create links\"","Sort every sheet first; labels make no difference"],"correct":0,"exp":"Consolidating by category (labels) matches items by name, so different orders and extra items are handled correctly. By position would add the wrong items together.","ds":[]}],"partB":[{"n":"B1","marks":2,"type":"formula","q":"Total Amount for <b>Beverage</b> orders from <b>Ahmedabad</b>. Do not use database functions.","ans":"=SUMIFS(H2:H19,C2:C19,\"Ahmedabad\",E2:E19,\"Beverage\")","alt":[],"exp":"SUMIFS puts the sum range first, then the criteria pairs → <b>₹870</b>.","ds":["orders"]},{"n":"B2","marks":2,"type":"formula","q":"Count the orders paid by <b>UPI</b> with a Qty of <b>5 or more</b>.","ans":"=COUNTIFS(I2:I19,\"UPI\",F2:F19,\">=5\")","alt":[],"exp":"Two conditions → COUNTIFS. Answer: <b>5</b>.","ds":["orders"]},{"n":"B3","marks":2,"type":"formula","q":"An item code is typed in N2. Return its Rate from the Menu Master, or the text \"Invalid code\" if it does not exist.","ans":"=IFERROR(VLOOKUP(N2,L2:O8,4,FALSE),\"Invalid code\")","alt":["=XLOOKUP(N2,L2:L8,O2:O8,\"Invalid code\")","=IFNA(VLOOKUP(N2,L2:O8,4,FALSE),\"Invalid code\")"],"exp":"Rate is the 4th column of L:O; IFERROR replaces the #N/A.","ds":["menu"]},{"n":"B4","marks":2,"type":"formula","q":"An item <b>name</b> is typed in N3. Return its <b>Item Code</b>. (The code column is to the left of the name.)","ans":"=INDEX(L2:L8,MATCH(N3,M2:M8,0))","alt":["=XLOOKUP(N3,M2:M8,L2:L8)"],"exp":"VLOOKUP cannot look left. MATCH finds the name in column M, INDEX returns the code from column L.","ds":["menu"]},{"n":"B5","marks":2,"type":"formula","q":"From the staff code in A23 (<code>AHD-BAR-014</code>) extract only the role code <code>BAR</code>.","ans":"=MID(A23,5,3)","alt":["=TEXTBEFORE(TEXTAFTER(A23,\"-\"),\"-\")","=INDEX(TEXTSPLIT(A23,\"-\"),2)"],"exp":"The role code always starts at character 5 and is 3 letters long.","ds":["staff"]},{"n":"B6","marks":2,"type":"formula","q":"Using B23 (Priya Shah) and D23 (2021), produce exactly <code>Priya S. (2021)</code>.","ans":"=TEXTBEFORE(B23,\" \")&\" \"&LEFT(TEXTAFTER(B23,\" \"),1)&\". (\"&D23&\")\"","alt":["=LEFT(B23,FIND(\" \",B23)-1)&\" \"&MID(B23,FIND(\" \",B23)+1,1)&\". (\"&D23&\")\""],"exp":"First name + space + first letter of surname + \". (\" + year + \")\".","ds":["staff"]},{"n":"B7","marks":2,"type":"formula","q":"Return the <b>Order ID</b> of the order with the highest Amount.","ans":"=INDEX(A2:A19,MATCH(MAX(H2:H19),H2:H19,0))","alt":["=XLOOKUP(MAX(H2:H19),H2:H19,A2:A19)"],"exp":"MAX finds ₹360, MATCH its row, INDEX the ID → <b>KC-1008</b>.","ds":["orders"]},{"n":"B8","marks":3,"type":"formula","q":"Spill every <b>Dessert</b> order (all columns), highest Amount first, in one formula.","ans":"=SORT(FILTER(A2:J19,E2:E19=\"Dessert\"),8,-1)","alt":["=SORTBY(FILTER(A2:J19,E2:E19=\"Dessert\"),FILTER(H2:H19,E2:E19=\"Dessert\"),-1)"],"exp":"FILTER keeps the Dessert rows; SORT on column 8 (Amount), −1 = descending → KC-1015, KC-1005, KC-1009.","ds":["orders"]},{"n":"B9","marks":3,"type":"formula","q":"Write the Conditional Formatting formula (rule applied to A2:J19) that colours the whole row when the Amount is <b>at least ₹240</b> and the order was paid in <b>Cash</b>.","ans":"=AND($H2>=240,$I2=\"Cash\")","alt":[],"exp":"Columns locked, rows free. Rows highlighted: KC-1014 and KC-1018.","ds":["orders"]},{"n":"B10","marks":3,"type":"criteria","q":"Using G22:J24 for the criteria range, total the Amount of orders that are either <b>Snacks sold in Pune</b>, or <b>Card payments above ₹200</b>. Write the criteria range and the formula.","grid":{"cols":["","G","H","I","J"],"rows":[["22","City","Category","Payment","Amount (₹)"],["23","Pune","Snack","",""],["24","","","Card",">200"]]},"ans":"=DSUM(A1:J19,\"Amount (₹)\",G22:J24)","alt":["=DSUM(A1:J19,8,G22:J24)"],"exp":"Row 23 = Pune AND Snack; row 24 = Card AND >200; separate rows are OR → <b>₹1,440</b>.","ds":["orders"]},{"n":"B11","marks":3,"type":"criteria","q":"Using G22:H24, find the <b>average Qty</b> of Beverage orders placed in <b>Jan or Feb</b>. Write the criteria range and the formula.","grid":{"cols":["","G","H"],"rows":[["22","Category","Month"],["23","Beverage","Jan"],["24","Beverage","Feb"]]},"ans":"=DAVERAGE(A1:J19,\"Qty\",G22:H24)","alt":["=DAVERAGE(A1:J19,6,G22:H24)"],"exp":"\"Beverage\" must repeat on both rows — a blank Category on the Feb row would let every Feb order in. Answer: <b>4.25</b>.","ds":["orders"]},{"n":"B12","marks":3,"type":"criteria","q":"Using G22:H23, count the <b>Ahmedabad</b> orders whose Amount is above the average Amount of all orders. Write the criteria range and the formula.","grid":{"cols":["","G","H"],"rows":[["22","City","Amount (₹)"],["23","Ahmedabad","=\">\"&AVERAGE($H$2:$H$19)"]]},"ans":"=DCOUNTA(A1:J19,\"Order ID\",G22:H23)","alt":["=DCOUNT(A1:J19,\"Amount (₹)\",G22:H23)"],"exp":"The second criterion builds the text \">230\" from the average. Answer: <b>4</b>.","ds":["orders"]},{"n":"B13","marks":3,"type":"formula","q":"Total monthly salary of <b>Baristas</b> who joined in <b>2022 or later</b>.","ans":"=SUMIFS(E23:E27,C23:C27,\"Barista\",D23:D27,\">=2022\")","alt":[],"exp":"Sana (2023) and Meera (2024) → <b>₹38,500</b>. Priya joined in 2021, so she is excluded.","ds":["staff"]},{"n":"B14","marks":3,"type":"formula","q":"Spill only the <b>Item</b> and <b>Rate</b> columns of the Menu Master, most expensive item first.","ans":"=SORT(CHOOSECOLS(L2:O8,2,4),2,-1)","alt":["=SORTBY(CHOOSECOLS(L2:O8,2,4),O2:O8,-1)"],"exp":"CHOOSECOLS keeps columns 2 and 4; SORT on the 2nd column of that result, descending → Cold Coffee (₹120) first.","ds":["menu"]}]};
+const MEDIUM={"title":"Medium","marks":50,"minutes":75,"partA":[{"n":"A1","marks":1,"type":"mcq","q":"A10 holds <code>AR-BLR-1009</code>. What does <code>=MID(A10,FIND(\"-\",A10)+1,FIND(\"-\",A10,FIND(\"-\",A10)+1)-FIND(\"-\",A10)-1)</code> return?","opts":["-BL","BLR-","BLR","AR"],"correct":2,"exp":"First hyphen at 3, second at 7. MID starts at 3+1 = 4 and takes 7−3−1 = 3 characters → <b>BLR</b>. Starting at the hyphen itself gives \"-BL\"; dropping the −1 gives \"BLR-\".","ds":["visits"]},{"n":"A2","marks":1,"type":"mcq","q":"What does <code>=COUNTIFS(D2:D25,\"Cardiology\",G2:G25,\">\"&AVERAGE(G2:G25))</code> return?","opts":["8","7","#VALUE!","4"],"correct":3,"exp":"Average bill = ₹22,833.33. Cardiology visits above it → <b>4</b>. 8 is all Cardiology visits; 7 is every visit above average.","ds":["visits"]},{"n":"A3","marks":1,"type":"mcq","q":"G18 holds a bill of ₹74,500. The slab table is L11:M16. What does <code>=VLOOKUP(G18,$L$12:$M$16,2,TRUE)</code> return?","opts":["12%","15%","8%","#N/A"],"correct":0,"exp":"TRUE = approximate match: the largest \"Bill From\" not above ₹74,500 is ₹50,000 → <b>12%</b>. It never rounds up to the 15% slab.","ds":["visits","slab"]},{"n":"A4","marks":1,"type":"mcq","q":"What does <code>=INDEX(B29:G32,MATCH(\"ICU\",A29:A32,0),MATCH(\"Apr\",B28:G28,0))</code> return?","opts":["88%","97%","94%","80%"],"correct":1,"exp":"Row 2 (ICU), column 4 (Apr) of the grid → <b>97%</b>.","ds":["occ"]},{"n":"A5","marks":1,"type":"mcq","q":"Occupancy values are stored as decimals (78% = 0.78). What does <code>=SUM(OFFSET(B29,1,2,2,3))</code> return?","opts":["0.89","5.34","4.79","4.92"],"correct":2,"exp":"From B29 move 1 down and 2 right → D30, then take 2 rows × 3 columns = D30:F31 (ICU and Paediatric, Mar–May). Sum = <b>4.79</b>. Without height/width you'd get just D30 = 0.89.","ds":["occ"]},{"n":"A6","marks":1,"type":"mcq","q":"K20:K21 holds <code>Department</code> / <code>Paediatrics</code>. What does <code>=DCOUNT(A1:I25,\"Insured\",K20:K21)</code> return?","opts":["5","3","#VALUE!","0"],"correct":3,"exp":"Insured holds text (Y/N). DCOUNT counts numbers only → <b>0</b>. DCOUNTA would give 5.","ds":["visits"]},{"n":"A7","marks":1,"type":"mcq","q":"What does <code>=SUMPRODUCT((F2:F25=\"IPD\")*(H2:H25=\"N\")*G2:G25)</code> return?","opts":["94,000","5,21,500","1,05,100","2"],"correct":0,"exp":"Both conditions must be TRUE (1×1) for a bill to count: uninsured IPD visits → <b>₹94,000</b>.","ds":["visits"]},{"n":"A8","marks":1,"type":"mcq","q":"What does <code>=FREQUENCY(C2:C25,{12;40;59})</code> return?","opts":["{5;6;6}","{5;6;6;7}","{5;6;13}","{6;6;7;5}"],"correct":1,"exp":"Bins give 4 buckets (bins + 1): ≤12, 13–40, 41–59, above 59 → <b>{5;6;6;7}</b>. Forgetting the overflow bucket is the classic slip.","ds":["visits"]},{"n":"A9","marks":1,"type":"mcq","q":"Rule applied to B29:G32 to shade each ward's <b>peak month</b> in its own row:","opts":["=B29=MAX($B$29:$G$32)","=B29=MAX(B29:G29)","=B29=MAX($B29:$G29)","=$B29=MAX($B29:$G29)"],"correct":2,"exp":"The cell stays fully relative; the MAX range locks columns but not the row, so each row compares against its own six months. $B$29:$G$32 would only shade the single global maximum.","ds":["occ"]},{"n":"A10","marks":2,"type":"tool","q":"In the Insurance model (L18:M24) you build a two-variable Data Table: premiums 4000/4400/4800/5200 across Q19:T19 and claim rates 14%–22% down P20:P24. Fill the corner cell and both input cells.","fields":[["Formula in corner P19","=M24"],["Row input cell","M19"],["Column input cell","M21"]],"exp":"Across-the-top values (premiums) feed the Row input cell M19; down-the-side values (claim rates) feed the Column input cell M21; the corner links to the output M24. Example: ₹4,400 at 16% → ₹6,60,000.","ds":["ins"]},{"n":"A11","marks":2,"type":"tool","q":"At the current premium the surplus is ₹-2,70,000. Find the break-even premium with Goal Seek.","fields":[["Set cell","M24"],["To value","0"],["By changing cell","M19"]],"exp":"Break-even premium = (1500×18%×21000 + 900000) ÷ 1500 = <b>₹4,380</b>.","ds":["ins"]},{"n":"A12","marks":2,"type":"mcq","q":"The board wants \"Optimistic\", \"Base\" and \"Stress\" versions of the insurance model, each changing Members, Claim rate, Average claim and Admin cost together, compared side by side. Best tool:","opts":["Scenario Manager","Two-variable Data Table","Goal Seek","Solver"],"correct":0,"exp":"Named sets of several changing cells (up to 32) with a summary report = Scenario Manager. A Data Table varies at most two inputs.","ds":["ins"]}],"partB":[{"n":"B1","marks":2,"type":"formula","q":"Total bill of <b>insured</b>, <b>IPD</b>, <b>Cardiology</b> visits. No database functions.","ans":"=SUMIFS(G2:G25,D2:D25,\"Cardiology\",F2:F25,\"IPD\",H2:H25,\"Y\")","alt":[],"exp":"Three criteria pairs → <b>₹2,43,000</b>.","ds":["visits"]},{"n":"B2","marks":2,"type":"formula","q":"Return the <b>doctor's name</b> for the doctor code in E2.","ans":"=XLOOKUP(E2,$L$2:$L$8,$M$2:$M$8)","alt":["=VLOOKUP(E2,$L$2:$P$8,2,FALSE)","=INDEX($M$2:$M$8,MATCH(E2,$L$2:$L$8,0))"],"exp":"E2 = D01 → <b>Dr. S. Bhandari</b>.","ds":["visits","doctors"]},{"n":"B3","marks":2,"type":"formula","q":"Using the slab table, return the <b>discount in rupees</b> for the bill in G2.","ans":"=G2*VLOOKUP(G2,$L$12:$M$16,2,TRUE)","alt":["=G2*XLOOKUP(G2,$L$12:$L$16,$M$12:$M$16,,-1)"],"exp":"₹48,500 falls in the 8% slab → <b>₹3,880</b>.","ds":["visits","slab"]},{"n":"B4","marks":2,"type":"formula","q":"The city code sits inside the Visit ID. Count the visits from <b>Pune</b> (code PUN).","ans":"=COUNTIF(A2:A25,\"*-PUN-*\")","alt":[],"exp":"Wildcards on both sides find \"-PUN-\" anywhere → <b>8</b>.","ds":["visits"]},{"n":"B5","marks":2,"type":"formula","q":"In J2, label the patient by age: <b>Child</b> under 13, <b>Adult</b> 13–59, <b>Senior</b> 60 and above.","ans":"=IFS(C2<13,\"Child\",C2<60,\"Adult\",TRUE,\"Senior\")","alt":["=IF(C2<13,\"Child\",IF(C2<60,\"Adult\",\"Senior\"))"],"exp":"IFS stops at the first TRUE test; TRUE at the end catches everyone left. C2 = 54 → Adult.","ds":["visits"]},{"n":"B6","marks":2,"type":"formula","q":"A ward name is typed in N28 and a month in N29. Return that ward's occupancy for that month.","ans":"=INDEX(B29:G32,MATCH(N28,A29:A32,0),MATCH(N29,B28:G28,0))","alt":["=XLOOKUP(N28,A29:A32,XLOOKUP(N29,B28:G28,B29:G32))"],"exp":"One MATCH for the row (ward), one for the column (month).","ds":["occ"]},{"n":"B7","marks":2,"type":"formula","q":"Average bill of <b>OPD</b> visits by patients aged <b>60 or more</b>.","ans":"=AVERAGEIFS(G2:G25,C2:C25,\">=60\",F2:F25,\"OPD\")","alt":[],"exp":"Three senior OPD visits → <b>₹2,700</b>.","ds":["visits"]},{"n":"B8","marks":3,"type":"formula","q":"Spill only <b>Patient</b>, <b>Department</b> and <b>Bill</b> for uninsured IPD visits, largest bill first.","ans":"=SORT(CHOOSECOLS(FILTER(A2:I25,(F2:F25=\"IPD\")*(H2:H25=\"N\")),2,4,7),3,-1)","alt":["=SORTBY(CHOOSECOLS(FILTER(A2:I25,(F2:F25=\"IPD\")*(H2:H25=\"N\")),2,4,7),FILTER(G2:G25,(F2:F25=\"IPD\")*(H2:H25=\"N\")),-1)"],"exp":"FILTER with two conditions multiplied, keep columns 2, 4, 7, then sort on the 3rd column → Gopal Reddy, Imran Khan.","ds":["visits"]},{"n":"B9","marks":3,"type":"formula","q":"Every visit is charged its doctor's consult fee. In ONE formula (no helper column) return the total consult fees earned across all visits.","ans":"=SUMPRODUCT(SUMIF($L$2:$L$8,E2:E25,$P$2:$P$8))","alt":["=SUM(XLOOKUP(E2:E25,$L$2:$L$8,$P$2:$P$8))"],"exp":"SUMIF with an array of 24 codes returns 24 fees; SUMPRODUCT adds them → <b>₹23,800</b>.","ds":["visits","doctors"]},{"n":"B10","marks":3,"type":"criteria","q":"Using A35:D37, total the bills of: <b>Cardiology IPD visits in April</b>, OR <b>Orthopaedics visits with a bill above ₹50,000</b>.","grid":{"cols":["","A","B","C","D"],"rows":[["35","Department","Visit Type","Month","Bill (₹)"],["36","Cardiology","IPD","Apr",""],["37","Orthopaedics","","",">50000"]]},"ans":"=DSUM(A1:I25,\"Bill (₹)\",A35:D37)","alt":["=DSUM(A1:I25,7,A35:D37)"],"exp":"→ <b>₹2,95,500</b>.","ds":["visits"]},{"n":"B11","marks":3,"type":"criteria","q":"Using A35:D37, find the <b>average bill</b> of: insured patients aged 60+, OR Paediatrics IPD visits.","grid":{"cols":["","A","B","C","D"],"rows":[["35","Age","Insured","Department","Visit Type"],["36",">=60","Y","",""],["37","","","Paediatrics","IPD"]]},"ans":"=DAVERAGE(A1:I25,\"Bill (₹)\",A35:D37)","alt":["=DAVERAGE(A1:I25,7,A35:D37)"],"exp":"→ <b>₹44,657.14</b>.","ds":["visits"]},{"n":"B12","marks":3,"type":"criteria","q":"Using A35:B36, count the <b>Dermatology</b> visits whose bill is above the <b>Dermatology average bill</b> (a formula criterion).","grid":{"cols":["","A","B"],"rows":[["35","Department",""],["36","Dermatology","=G2>AVERAGEIF($D$2:$D$25,\"Dermatology\",$G$2:$G$25)"]]},"ans":"=DCOUNTA(A1:I25,\"Visit ID\",A35:B36)","alt":[],"exp":"Leave B35 blank — a formula criterion needs a heading that is NOT a field name. Dermatology average = ₹3,220 → <b>1</b> visit above it.","ds":["visits"]},{"n":"B13","marks":3,"type":"formula","q":"Return the <b>Ward</b> that recorded the single highest occupancy across all wards and months.","ans":"=INDEX(A29:A32,SUMPRODUCT((B29:G32=MAX(B29:G32))*(ROW(B29:G32)-ROW(B28))))","alt":["=FILTER(A29:A32,MMULT(--(B29:G32=MAX(B29:G32)),{1;1;1;1;1;1})>0)"],"exp":"The max is 97%; the SUMPRODUCT returns that cell's row number inside the grid (1–4) → <b>ICU</b>.","ds":["occ"]},{"n":"B14","marks":3,"type":"formula","q":"Spill the <b>names</b> and <b>consult fees</b> of doctors with <b>10+ years</b> of experience, highest fee first.","ans":"=SORT(CHOOSECOLS(FILTER(L2:P8,O2:O8>=10),2,5),2,-1)","alt":["=SORTBY(CHOOSECOLS(FILTER(L2:P8,O2:O8>=10),2,5),FILTER(P2:P8,O2:O8>=10),-1)"],"exp":"→ Dr. S. Bhandari (₹1,500), Dr. A. Kapoor (₹1,200), Dr. K. Sethi (₹900), Dr. M. Fernandes (₹700).","ds":["doctors"]}]};
+const GOD={"title":"God Level","marks":50,"minutes":75,"partA":[{"n":"A1","marks":1,"type":"mcq","q":"What does <code>=SUMPRODUCT(((E2:E31=\"Buy\")*2-1)*F2:F31)</code> return?","opts":["639","355","71","-71"],"correct":2,"exp":"(Side=\"Buy\")*2−1 turns Buy into +1 and Sell into −1, so this is the desk's net lots (buys minus sells) → <b>71</b>. 639 is gross lots, 355 is buy lots only.","ds":["blotter"]},{"n":"A2","marks":1,"type":"mcq","q":"A junior writes <code>=SUMPRODUCT((D2:D31=\"RBB\")*(H2:H31-G2:G31)*F2:F31)*42000</code> for total RBOB P&L. On this blotter it is:","opts":["Correct — 42000 is the RBOB lot size","Wrong — SUMPRODUCT cannot multiply more than two arrays","Correct, but only because every RBOB trade is on NYMEX","Wrong — it ignores Side, so Sell trades are counted as if they were Buys"],"correct":3,"exp":"RBOB has both Buys and Sells here. A short position gains when price falls, so each row needs a ±1 sign from Side. Without it, every Sell's P&L has the wrong sign.","ds":["blotter","specs"]},{"n":"A3","marks":1,"type":"mcq","q":"What does <code>=INDEX(L9:Q9,MATCH(MAX(M10:Q10),M10:Q10,0)+1)</code> return?","opts":["Esha","Dmitri","40","#REF!"],"correct":0,"exp":"MAX = 40, at position 5 of M10:Q10. INDEX is taken over L9:Q9, which starts one column earlier (the \"Metric\" label), hence the +1 → 6th item = <b>Esha</b>. Without the +1 you'd get Dmitri.","ds":["limits"]},{"n":"A4","marks":1,"type":"mcq","q":"What does <code>=MMULT(M20:M22,M15:O16)</code> return?","opts":["{259000;-415000}","#VALUE!","A 3×3 array","#SPILL!"],"correct":1,"exp":"M20:M22 is 3×1 and M15:O16 is 2×3. MMULT needs columns of the first = rows of the second (1 ≠ 2) → <b>#VALUE!</b>. The correct order MMULT(M15:O16,M20:M22) gives {259000;-415000}.","ds":["shock","expo"]},{"n":"A5","marks":1,"type":"mcq","q":"What does <code>=COUNT(FIND(\"BRT\",A2:A31))</code> return?","opts":["30","#VALUE!","7","1"],"correct":2,"exp":"FIND over 30 cells returns 30 results: a position number where \"BRT\" exists, #VALUE! where it doesn't. COUNT ignores errors and counts the numbers → <b>7</b> Brent trades.","ds":["blotter"]},{"n":"A6","marks":1,"type":"mcq","q":"What does <code>=SUMPRODUCT(--(MOD(ROW(F2:F31),2)=0),F2:F31)</code> return?","opts":["313","639","15","326"],"correct":3,"exp":"ROW gives sheet rows 2–31; MOD(…,2)=0 keeps even rows (2, 4, …, 30). It sums Lots on those rows → <b>326</b>. 313 is the odd-row total.","ds":["blotter"]},{"n":"A7","marks":1,"type":"mcq","q":"What does <code>=INDEX(TEXTSPLIT(A12,\"-\"),3)</code> return? (A12 = ASC-26-BRT-011)","opts":["BRT","26","011","ASC-26"],"correct":0,"exp":"TEXTSPLIT spills {\"ASC\",\"26\",\"BRT\",\"011\"}; INDEX picks the 3rd piece → <b>BRT</b>.","ds":["blotter"]},{"n":"A8","marks":1,"type":"mcq","q":"What does <code>=XLOOKUP(MAX(F2:F31*(B2:B31=\"Bianca\")),F2:F31*(B2:B31=\"Bianca\"),A2:A31)</code> return?","opts":["ASC-26-GSO-003","ASC-26-WTI-013","ASC-26-HHG-029","30"],"correct":1,"exp":"Multiplying by (Trader=\"Bianca\") zeroes everyone else, so both the MAX and the lookup run on Bianca-only lots. Her max is 30 → <b>ASC-26-WTI-013</b>. Looking up 30 in plain Lots would hit ASC-26-GSO-003 (Chen) first.","ds":["blotter"]},{"n":"A9","marks":1,"type":"mcq","q":"What does <code>=FREQUENCY(F2:F31,{10;20;30})</code> return?","opts":["{4;13;10}","{4;13;13}","{4;13;10;3}","{17;10;3;0}"],"correct":2,"exp":"Four buckets (bins + 1): ≤10, 11–20, 21–30, above 30 → <b>{4;13;10;3}</b>.","ds":["blotter"]},{"n":"A10","marks":2,"type":"tool","q":"Use Solver on the Capital Allocation Model (A34:E40) to maximise expected P&L. Lots must be whole numbers, within each strategy's max, and total margin must not exceed the budget in C40. Fill the Solver dialog.","fields":[["Set Objective","B39 (Max)"],["By Changing Variable Cells","D35:D38"],["Constraints","C39<=C40 ; D35:D38<=E35:E38 ; D35:D38 = integer ; D35:D38>=0"],["Solving Method","Simplex LP"]],"exp":"The objective and all constraints are linear (SUMPRODUCTs), so Simplex LP solves it exactly; the integer constraint stops fractional lots.","ds":["solver"]},{"n":"A11","marks":2,"type":"tool","q":"K21 holds trade ASC-26-BRT-020's P&L: <code>=(H21-G21)*F21*VLOOKUP(D21,$L$2:$O$6,4,FALSE)*IF(E21=\"Buy\",1,-1)</code>, currently USD 40,500. Find the exit price at which this trade makes exactly USD 75,000.","fields":[["Set cell","K21"],["To value","75000"],["By changing cell","H21"]],"exp":"Exit = 85.60 + 75000 ÷ (30 lots × 1000 bbl) = <b>88.10</b>.","ds":["blotter","specs"]},{"n":"A12","marks":2,"type":"mcq","q":"In a Pivot Table (Rows = Trader, Columns = Month) you need NET lots, with Sells counted as negative. The correct approach is:","opts":["Add a helper column =IF(E2=\"Buy\",F2,-F2) to the data and put that field in Values","Use a calculated field =IF(Side=\"Buy\",Lots,-Lots)","Put Lots in Values and set \"Show Values As → Difference From\"","Put Side in Filters and set Values to Count"],"correct":0,"exp":"Calculated fields work on summed numbers and cannot test a text field row by row, so the sign has to be added in the source data. \"Difference From\" compares pivot items with each other; it doesn't apply a sign to Sell rows.","ds":["blotter"]}],"partB":[{"n":"B1","marks":2,"type":"formula","q":"From the Trade ID in A2 (<code>ASC-26-BRT-001</code>), extract the contract code <code>BRT</code>.","ans":"=MID(A2,8,3)","alt":["=TEXTBEFORE(TEXTAFTER(A2,\"-\",2),\"-\")","=INDEX(TEXTSPLIT(A2,\"-\"),3)"],"exp":"The code always starts at character 8 and is 3 letters long.","ds":["blotter"]},{"n":"B2","marks":2,"type":"formula","q":"Write the P&L formula for the trade in row 2, to be filled down column K. P&L = (Exit − Entry) × Lots × Lot Size, with a negative sign for Sells.","ans":"=(H2-G2)*F2*VLOOKUP(D2,$L$2:$O$6,4,FALSE)*IF(E2=\"Buy\",1,-1)","alt":["=(H2-G2)*F2*XLOOKUP(D2,$L$2:$L$6,$O$2:$O$6)*IF(E2=\"Buy\",1,-1)"],"exp":"Row 2: (82.10 − 81.40) × 20 × 1000 × (+1) = <b>USD 14,000</b>.","ds":["blotter","specs"]},{"n":"B3","marks":2,"type":"formula","q":"Total lots traded by the <b>Products</b> desk in <b>Jan, Feb and Mar</b>, in one formula.","ans":"=SUMPRODUCT((C2:C31=\"Products\")*((J2:J31=\"Jan\")+(J2:J31=\"Feb\")+(J2:J31=\"Mar\"))*F2:F31)","alt":["=SUM(SUMIFS(F2:F31,C2:C31,\"Products\",J2:J31,{\"Jan\",\"Feb\",\"Mar\"}))"],"exp":"Adding the month tests makes an OR; multiplying by the Desk test makes it an AND → <b>123</b>.","ds":["blotter"]},{"n":"B4","marks":2,"type":"formula","q":"For row 2, return the exchange looked up from Contract Specs; return \"MISMATCH\" if it differs from the Exchange in I2.","ans":"=IF(VLOOKUP(D2,$L$2:$O$6,3,FALSE)=I2,I2,\"MISMATCH\")","alt":["=IF(XLOOKUP(D2,$L$2:$L$6,$N$2:$N$6)=I2,I2,\"MISMATCH\")"],"exp":"Row 2: BRT trades on ICE, and I2 says ICE → ICE.","ds":["blotter","specs"]},{"n":"B5","marks":2,"type":"formula","q":"Return the stop-loss for the trader in B2 from the Trader Limits table (traders run <b>across</b> M9:Q9).","ans":"=HLOOKUP(B2,$M$9:$Q$11,3,FALSE)","alt":["=INDEX($M$11:$Q$11,MATCH(B2,$M$9:$Q$9,0))","=XLOOKUP(B2,$M$9:$Q$9,$M$11:$Q$11)"],"exp":"HLOOKUP searches across the top row and returns row 3 of M9:Q11 → Aakash = <b>USD 60,000</b>.","ds":["blotter","limits"]},{"n":"B6","marks":2,"type":"formula","q":"Count the <b>NYMEX Buy</b> trades that lost money (Exit Price below Entry Price).","ans":"=SUMPRODUCT((I2:I31=\"NYMEX\")*(E2:E31=\"Buy\")*(H2:H31<G2:G31))","alt":[],"exp":"COUNTIFS cannot compare two columns row by row, so SUMPRODUCT is needed → <b>3</b>.","ds":["blotter"]},{"n":"B7","marks":2,"type":"formula","q":"Average Entry Price of <b>Brent (BRT) Buy</b> trades.","ans":"=AVERAGEIFS(G2:G31,D2:D31,\"BRT\",E2:E31,\"Buy\")","alt":[],"exp":"→ <b>83.57</b>.","ds":["blotter"]},{"n":"B8","marks":3,"type":"formula","q":"Total P&L of the whole blotter in ONE formula, with no helper column (lot sizes come from Contract Specs).","ans":"=SUMPRODUCT((H2:H31-G2:G31)*F2:F31*SUMIF($L$2:$L$6,D2:D31,$O$2:$O$6)*((E2:E31=\"Buy\")*2-1))","alt":["=SUMPRODUCT((H2:H31-G2:G31)*F2:F31*XLOOKUP(D2:D31,$L$2:$L$6,$O$2:$O$6)*IF(E2:E31=\"Buy\",1,-1))"],"exp":"SUMIF with an array of 30 codes returns 30 lot sizes. ((E2:E31=\"Buy\")*2-1) is the ±1 for Side → <b>USD 400,224</b>. Without the sign you would get USD -55,056.","ds":["blotter","specs"]},{"n":"B9","marks":3,"type":"formula","q":"Count the trades whose Lots exceed that trader's <b>Max lots per trade</b> (row 10 of the limits table, traders across).","ans":"=SUMPRODUCT(--(F2:F31>SUMIF($M$9:$Q$9,B2:B31,$M$10:$Q$10)))","alt":["=SUMPRODUCT(--(F2:F31>HLOOKUP(B2:B31,$M$9:$Q$10,2,FALSE)))"],"exp":"SUMIF works across a row too, returning each trade's own limit → <b>3</b> breaches (ASC-26-GSO-003, ASC-26-WTI-013, ASC-26-HHG-024).","ds":["blotter","limits"]},{"n":"B10","marks":3,"type":"formula","q":"K2:K31 now holds each trade's P&L (from B2). Using the trader names in M9:Q9, return the trader with the <b>highest total P&L</b>.","ans":"=INDEX(M9:Q9,MATCH(MAX(SUMIF(B2:B31,M9:Q9,K2:K31)),SUMIF(B2:B31,M9:Q9,K2:K31),0))","alt":["=XLOOKUP(MAX(SUMIF(B2:B31,M9:Q9,K2:K31)),SUMIF(B2:B31,M9:Q9,K2:K31),M9:Q9)"],"exp":"SUMIF over the 5 names gives 5 totals (Aakash USD 110,950, Bianca USD -28,518, Chen USD 103,928, Dmitri USD 60,614, Esha USD 153,250) → <b>Esha</b>.","ds":["blotter","limits"]},{"n":"B11","marks":3,"type":"criteria","q":"K1 = \"P&L (USD)\" and K2:K31 hold each trade's P&L. Using G34:J36, total the P&L of: <b>Crude desk Buys on ICE</b>, OR <b>Gas trades of 30 lots or more</b>.","grid":{"cols":["","G","H","I","J"],"rows":[["34","Desk","Side","Exchange","Lots"],["35","Crude","Buy","ICE",""],["36","Gas","","",">=30"]]},"ans":"=DSUM($A$1:$K$31,\"P&L (USD)\",G34:J36)","alt":["=DSUM(A1:K31,11,G34:J36)"],"exp":"→ <b>USD 193,000</b>.","ds":["blotter"]},{"n":"B12","marks":3,"type":"criteria","q":"Using G34:G35, count the trades where Lots exceed <b>that same trader's own average lots</b> (a formula criterion).","grid":{"cols":["","G"],"rows":[["34",""],["35","=F2>AVERAGEIF($B$2:$B$31,B2,$F$2:$F$31)"]]},"ans":"=DCOUNTA($A$1:$J$31,\"Trade ID\",G34:G35)","alt":[],"exp":"Leave G34 blank. B2 is relative, so each row compares against its own trader's average → <b>13</b>.","ds":["blotter"]},{"n":"B13","marks":3,"type":"formula","q":"Stack all <b>Crude</b> desk trades on top of all <b>Gas</b> desk trades (all columns), then sort the combined list by Lots, largest first, in ONE formula.","ans":"=SORT(VSTACK(FILTER(A2:J31,C2:C31=\"Crude\"),FILTER(A2:J31,C2:C31=\"Gas\")),6,-1)","alt":["=SORTBY(VSTACK(FILTER(A2:J31,C2:C31=\"Crude\"),FILTER(A2:J31,C2:C31=\"Gas\")),VSTACK(FILTER(F2:F31,C2:C31=\"Crude\"),FILTER(F2:F31,C2:C31=\"Gas\")),-1)"],"exp":"Two FILTERs stacked with VSTACK give 19 rows; SORT on the 6th column (Lots), descending.","ds":["blotter"]},{"n":"B14","marks":3,"type":"formula","q":"Using the shock matrix (M15:O16) and net exposure (M20:M22), return the <b>worse</b> of the two scenario P&Ls in one formula.","ans":"=MIN(MMULT(M15:O16,M20:M22))","alt":[],"exp":"MMULT (2×3)·(3×1) gives {Bull; Bear} = {259000;-415000}; MIN picks <b>USD -415,000</b>.","ds":["shock","expo"]}]};
+
+
+const PAPERS={easy:EASY,medium:MEDIUM,god:GOD};
+let CUR=null, timerId=null, remaining=0, selfmarks={};
+
+function tableHTML(ds){
+  let h='<div class="xtbl-wrap"><table class="xtbl"><thead><tr>';
+  ds.cols.forEach(c=>h+='<th>'+c+'</th>');h+='</tr></thead><tbody>';
+  ds.rows.forEach(r=>{h+='<tr>';r.forEach(c=>h+='<td>'+c+'</td>');h+='</tr>';});
+  return h+'</tbody></table></div>';
+}
+function refBlock(keys){
+  if(!keys)return'';if(!Array.isArray(keys))keys=[keys];
+  return keys.map(key=>{const ds=DATASETS[key];if(!ds)return'';
+    return '<details class="refwrap"><summary><span class="chev">▶</span>'+ds.title+'</summary><div class="refbody">'+tableHTML(ds)+'</div></details>';}).join('');
+}
+function qHTML(q,idx){
+  let body='<div class="q" id="q_'+idx+'"><div class="qh"><span class="qn">'+q.n+'</span><span class="mk">'+q.marks+' mark'+(q.marks>1?'s':'')+'</span></div><div class="qbody">'+q.q+'</div>';
+  if(q.ds&&q.ds.length)body+=refBlock(q.ds);
+  if(q.type==='mcq'){
+    body+='<div class="opts" data-i="'+idx+'">';
+    q.opts.forEach((o,p)=>{body+='<div class="opt" data-p="'+p+'" onclick="pickOpt('+idx+','+p+')"><span class="k">'+String.fromCharCode(65+p)+'</span><span>'+o+'</span></div>';});
+    body+='</div>';
+  } else if(q.type==='tool'){
+    body+='<div style="font-size:12.5px;color:var(--muted);margin-bottom:6px">Fill each field as you would in the dialog:</div>';
+    q.fields.forEach((f,p)=>{body+='<div class="fieldrow"><span class="fl">'+f[0]+'</span><input id="fld_'+idx+'_'+p+'" placeholder="type here" autocomplete="off"></div>';});
+  } else if(q.type==='criteria'){
+    // editable criteria grid + formula box
+    body+='<div style="font-size:12.5px;color:var(--muted);margin-bottom:4px">Criteria range — type values/headers into the cells:</div><div class="cgrid"><table class="cg"><thead><tr>';
+    q.grid.cols.forEach(c=>body+='<th>'+c+'</th>');body+='</tr></thead><tbody>';
+    q.grid.rows.forEach((r,ri)=>{body+='<tr>';r.forEach((c,ci)=>{if(ci===0)body+='<td>'+c+'</td>';else body+='<td><input id="cg_'+idx+'_'+ri+'_'+ci+'" placeholder=""></td>';});body+='</tr>';});
+    body+='</tbody></table></div>';
+    body+='<div style="font-size:12.5px;color:var(--muted);margin:8px 0 4px">Formula:</div><textarea class="answer-in" id="ans_'+idx+'" placeholder="=..."></textarea>';
+  } else { // formula
+    body+='<textarea class="answer-in" id="ans_'+idx+'" placeholder="Type your formula, starting with ="></textarea>';
+  }
+  // actions
+  body+='<div class="qactions"><button onclick="reveal('+idx+')">Reveal answer</button>';
+  body+='<div class="selfmark" id="sm_'+idx+'">Self-mark: <button class="mc" onclick="mark('+idx+',1)">Correct</button>';
+  if(q.marks>1)body+='<button class="mp" onclick="mark('+idx+',0.5)">Partial</button>';
+  body+='<button class="mw" onclick="mark('+idx+',0)">Wrong</button></div></div>';
+  // model answer
+  body+='<div class="model" id="model_'+idx+'"><div class="ml">Answer</div>';
+  if(q.type==='mcq'){body+='<div class="mf">'+String.fromCharCode(65+q.correct)+'. '+q.opts[q.correct]+'</div>';}
+  else if(q.type==='tool'){q.fields.forEach(f=>{body+='<div class="mf">'+f[0]+' → '+String(f[1]).replace(/</g,'&lt;')+'</div>';});}
+  else if(q.type==='criteria'){body+='<div class="ml" style="margin-top:2px">Criteria range</div><div class="xtbl-wrap"><table class="xtbl"><thead><tr>'+q.grid.cols.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>'+q.grid.rows.map(r=>'<tr>'+r.map(c=>'<td>'+String(c).replace(/</g,'&lt;')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div><div class="ml" style="margin-top:8px">Formula</div><div class="mf">'+(q.ans||'').replace(/</g,'&lt;')+'</div>';if(q.alt&&q.alt.length){body+='<div class="alt">Also accepted: '+q.alt.map(a=>'<code>'+a.replace(/</g,'&lt;')+'</code>').join(' · ')+'</div>';}}
+  else{body+='<div class="mf">'+(q.ans||'').replace(/</g,'&lt;')+'</div>';if(q.alt&&q.alt.length){body+='<div class="alt">Also accepted: '+q.alt.map(a=>'<code>'+a.replace(/</g,'&lt;')+'</code>').join(' · ')+'</div>';}}
+  body+='<div class="exp">'+q.exp+'</div></div>';
+  return body+'</div>';
+}
+function startPaper(key){
+  CUR=key;const P=PAPERS[key];selfmarks={};
+  document.getElementById('home').style.display='none';
+  document.getElementById('bar').classList.add('show');
+  const sec=document.getElementById('exam');sec.closest('section.exam').classList.add('show');
+  document.getElementById('barTitle').textContent=P.title;
+  let allQ=[]; let h='<div class="instructions"><b>Written-exam mode.</b> Type each formula exactly as you would into Excel’s formula bar, starting with <code>=</code> — commas, colons, quotes and cell references all count. Part A is MCQ / dialog-fill; Part B is write-the-formula against the reference datasets. After the timer (or whenever you like) hit <b>Reveal answer</b>, then self-mark each question so your score adds up. Total: '+P.marks+' marks · '+P.minutes+' minutes.</div>';
+  h+='<div class="parthead">Part A <span>· Q1–Q9 × 1 = 9 · Q10–Q12 × 2 = 6</span></div>';
+  P.partA.forEach(q=>{allQ.push(q);h+=qHTML(q,allQ.length-1);});
+  h+='<div class="parthead">Part B <span>· Q1–Q7 × 2 = 14 · Q8–Q14 × 3 = 21</span></div>';
+  P.partB.forEach(q=>{allQ.push(q);h+=qHTML(q,allQ.length-1);});
+  h+='<div class="result" id="result"></div>';
+  h+='<div style="text-align:center;margin-top:20px"><button class="primary" style="font-size:14px;padding:11px 22px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);font-weight:700;cursor:pointer" onclick="submitPaper()">Reveal all &amp; score</button></div>';
+  sec.innerHTML=h;
+  CUR_Q=allQ;
+  let nv='<div class="ph">Part A</div><div class="grid">';
+  allQ.forEach((q,i)=>{
+    if(i===P.partA.length)nv+='</div><div class="ph">Part B</div><div class="grid">';
+    nv+='<button id="nv_'+i+'" onclick="goQ('+i+')">'+q.n+'</button>';
+  });
+  document.getElementById('qnav').innerHTML=nv+'</div>';
+  sec.querySelectorAll('textarea,input').forEach(el=>el.addEventListener('input',()=>{
+    const q=el.closest('.q');if(!q)return;const i=+q.id.slice(2);
+    const filled=[...q.querySelectorAll('textarea,input')].some(x=>x.value.trim()!=='');
+    navDone(i,filled);
+  }));
+  remaining=P.minutes*60;startTimer();
+  window.scrollTo({top:0});
+}
+let CUR_Q=[];
+function goQ(i){const el=document.getElementById('q_'+i);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+function navDone(i,on){const b=document.getElementById('nv_'+i);if(b&&!b.classList.contains('mc')&&!b.classList.contains('mp')&&!b.classList.contains('mw'))b.classList.toggle('done',on);}
+function pickOpt(i,p){
+  navDone(i,true);
+  const box=document.querySelector('.opts[data-i="'+i+'"]');
+  [...box.children].forEach(c=>c.classList.remove('sel'));
+  box.children[p].classList.add('sel');
+  box.dataset.picked=p;
+}
+function reveal(i){
+  document.getElementById('model_'+i).classList.add('show');
+  document.getElementById('sm_'+i).classList.add('show');
+  const q=CUR_Q[i];
+  if(q.type==='mcq'){
+    const box=document.querySelector('.opts[data-i="'+i+'"]');
+    const picked=box.dataset.picked;
+    [...box.children].forEach((c,p)=>{
+      if(p===q.correct)c.classList.add('right');
+      if(picked!=null&&+picked===p&&p!==q.correct)c.classList.add('chosen-wrong');
+    });
+    // auto self-mark MCQ
+    if(picked!=null){mark(i, (+picked===q.correct)?1:0);}
+  }
+}
+function mark(i,frac){
+  selfmarks[i]=frac*CUR_Q[i].marks;
+  const sm=document.getElementById('sm_'+i);
+  [...sm.querySelectorAll('button')].forEach(b=>b.classList.remove('on'));
+  const cls=frac===1?'mc':frac===0?'mw':'mp';
+  const btn=sm.querySelector('.'+cls);if(btn)btn.classList.add('on');
+  const nb=document.getElementById('nv_'+i);if(nb){nb.classList.remove('done','mc','mp','mw');nb.classList.add(cls);}
+  updatePts();
+}
+function updatePts(){
+  const got=Object.values(selfmarks).reduce((a,b)=>a+b,0);
+  document.getElementById('barPts').textContent='Self-score: '+got.toFixed(1)+' / '+PAPERS[CUR].marks;
+}
+function submitPaper(){
+  CUR_Q.forEach((q,i)=>reveal(i));
+  const got=Object.values(selfmarks).reduce((a,b)=>a+b,0);
+  const total=PAPERS[CUR].marks;
+  const pct=Math.round(got/total*100);
+  let cls;const g=got;
+  if(g>=40)cls='Excellent — exam ready.';
+  else if(g>=30)cls='Solid — tighten the slips.';
+  else if(g>=20)cls='Needs revision — redo the missed formulas.';
+  else cls='Revise the concepts, then retake.';
+  const r=document.getElementById('result');r.classList.add('show');
+  r.innerHTML='<h2>Self-scored result</h2><div class="big">'+got.toFixed(1)+' / '+total+'</div><div class="cls">'+cls+'</div><div class="row"><div>Percentage<b>'+pct+'%</b></div><div>Questions<b>'+CUR_Q.length+'</b></div><div>Marks graded<b>'+Object.keys(selfmarks).length+'/'+CUR_Q.length+'</b></div></div><div style="font-size:12px;color:var(--muted);margin-top:12px">Every answer is now shown above. Self-mark any you skipped so the total reflects your real score.</div>';
+  if(timerId)clearInterval(timerId);
+  r.scrollIntoView({behavior:'smooth'});
+}
+function startTimer(){
+  if(timerId)clearInterval(timerId);
+  const el=document.getElementById('timer');
+  function tick(){
+    const m=Math.floor(remaining/60),s=remaining%60;
+    el.textContent=m+':'+String(s).padStart(2,'0');
+    el.classList.toggle('warn',remaining<=600&&remaining>120);
+    el.classList.toggle('crit',remaining<=120);
+    if(remaining<=0){clearInterval(timerId);el.textContent='0:00';submitPaper();return;}
+    remaining--;
+  }
+  tick();timerId=setInterval(tick,1000);
+}
+function exitPaper(){
+  if(timerId)clearInterval(timerId);
+  document.getElementById('exam').closest('section.exam').classList.remove('show');
+  document.getElementById('bar').classList.remove('show');
+  document.getElementById('home').style.display='block';
+  window.scrollTo({top:0});
+}
+
+</script></body></html>
